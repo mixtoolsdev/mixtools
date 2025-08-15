@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MixTools — Tools (Real)</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<header><div class="brand">🧰 MixTools</div></header>
+<div class="wrap">
+  <h1>Tools — Client-side Real Functions</h1>
+
+  <div class="card">
+    <h3>1) Merge PDFs</h3>
+    <div class="upload" id="mergeDrop">Drop or <input type="file" id="mergeFiles" multiple accept="application/pdf" style="display:none"><button class="btn secondary" onclick="document.getElementById('mergeFiles').click()">Choose PDFs</button><div id="mergeList"></div></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="mergeBtn">Merge</button><button class="btn secondary" id="mergeClear">Clear</button></div>
+    <div class="progress"><div id="mergeBar" class="bar"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>2) Split / Extract Pages</h3>
+    <div class="upload" id="splitDrop">Drop a PDF or <input type="file" id="splitFile" accept="application/pdf" style="display:none"><button class="btn secondary" onclick="document.getElementById('splitFile').click()">Choose PDF</button><div id="splitName"></div></div>
+    <div style="margin-top:8px" class="row"><input class="btn secondary" id="splitRanges" style="padding:8px" placeholder="Pages (e.g. 1,3,5-7)"><button class="btn" id="splitBtn">Extract</button><button class="btn secondary" id="splitClear">Clear</button></div>
+    <div class="progress"><div id="splitBar" class="bar"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>3) Compress (Raster)</h3>
+    <div class="upload" id="compDrop">Drop a PDF or <input type="file" id="compFile" accept="application/pdf" style="display:none"><button class="btn secondary" onclick="document.getElementById('compFile').click()">Choose PDF</button><div id="compName"></div></div>
+    <div style="margin-top:8px" class="row"><label>Quality</label><select id="compQuality" class="btn secondary"><option value="0.6">Medium</option><option value="0.8">High</option><option value="0.4">Low</option></select><button class="btn" id="compBtn">Compress</button><button class="btn secondary" id="compClear">Clear</button></div>
+    <div class="progress"><div id="compBar" class="bar"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>4) Images → PDF</h3>
+    <input type="file" id="imgFiles" accept="image/*" multiple style="display:none"><button class="btn secondary" onclick="document.getElementById('imgFiles').click()">Choose Images</button><div id="imgList"></div><button class="btn" id="imgToPdf">Create PDF</button>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>5) PDF → JPG (Export pages)</h3>
+    <div class="upload" id="pdfToImgDrop">Drop a PDF or <input type="file" id="pdfToImgFile" accept="application/pdf" style="display:none"><button class="btn secondary" onclick="document.getElementById('pdfToImgFile').click()">Choose PDF</button><div id="pdfToImgName"></div></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="pdfToImgBtn">Export JPGs</button><button class="btn secondary" id="pdfToImgClear">Clear</button></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>6) Word → PDF (client-side, Mammoth.js + jsPDF)</h3>
+    <input type="file" id="docxFile" accept=".docx" style="display:none"><button class="btn secondary" onclick="document.getElementById('docxFile').click()">Choose DOCX</button><div id="docxName"></div><button class="btn" id="docxToPdf">Convert to PDF</button>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>7) PDF → Word (basic text extraction → DOCX)</h3>
+    <div class="upload" id="pdfToDocDrop">Drop a PDF or <input type="file" id="pdfToDocFile" accept="application/pdf" style="display:none"><button class="btn secondary" onclick="document.getElementById('pdfToDocFile').click()">Choose PDF</button><div id="pdfToDocName"></div></div>
+    <div style="margin-top:8px" class="row"><button class="btn" id="pdfToDocBtn">Convert to DOCX (text only)</button><button class="btn secondary" id="pdfToDocClear">Clear</button></div>
+  </div>
+
+  <div style="margin-top:16px" class="card"><strong>Console:</strong><pre id="console"></pre></div>
+
+  <div style="margin-top:12px" class="footer small">Notes: PDF→Word is basic text-extract (no layout). For high fidelity Word/PDF conversions or OCR, a backend is recommended.</div>
+
+</div>
+
+<!-- Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.7.0/docx.min.js"></script>
+
+<script>
+const log = (m)=>{ const c=document.getElementById('console'); c.textContent += m + '\n'; };
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.worker.min.js';
+
+/* Helpers */
+function downloadBytes(bytes, name, mime='application/pdf'){ const blob = new Blob([bytes], {type:mime}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1500); }
+function setBar(id,val){ const b=document.getElementById(id); if(b) b.style.width=val+'%'; }
+function parseRanges(str){ if(!str) return []; const parts=str.split(',').map(s=>s.trim()).filter(Boolean); const out=[]; parts.forEach(p=>{ if(p.includes('-')){ const [a,b]=p.split('-').map(n=>+n); for(let i=a;i<=b;i++) out.push(i);} else out.push(+p); }); return Array.from(new Set(out)).filter(n=>Number.isInteger(n)&&n>0); }
+
+/* Merge */
+const mergeFiles = document.getElementById('mergeFiles'), mergeList=document.getElementById('mergeList');
+document.getElementById('mergeClear').onclick = ()=>{ mergeFiles.value=''; mergeList.innerHTML=''; setBar('mergeBar',0); };
+mergeFiles.onchange = ()=>{ mergeList.innerHTML=''; [...mergeFiles.files].forEach(f=>{ const s=document.createElement('span'); s.className='file-pill'; s.textContent=f.name; mergeList.appendChild(s); }); };
+document.getElementById('mergeBtn').onclick = async ()=>{
+  if(!mergeFiles.files.length) return alert('Select 2+ PDFs'); if(mergeFiles.files.length<2) return alert('Select 2+ PDFs');
+  setBar('mergeBar',5); const out = await PDFLib.PDFDocument.create(); let i=0;
+  for(const f of mergeFiles.files){ const bytes = await f.arrayBuffer(); const src = await PDFLib.PDFDocument.load(bytes); const pages = await out.copyPages(src, src.getPageIndices()); pages.forEach(p=>out.addPage(p)); i++; setBar('mergeBar', Math.round((i/mergeFiles.files.length)*95)); }
+  const res = await out.save(); setBar('mergeBar',100); downloadBytes(res,'merged.pdf'); setTimeout(()=>setBar('mergeBar',0),700);
+};
+
+/* Split */
+const splitFile = document.getElementById('splitFile'), splitName=document.getElementById('splitName');
+document.getElementById('splitClear').onclick = ()=>{ splitFile.value=''; splitName.innerHTML=''; document.getElementById('splitRanges').value=''; setBar('splitBar',0); };
+splitFile.onchange = ()=>{ splitName.innerHTML = splitFile.files[0] ? `<span class="file-pill">${splitFile.files[0].name}</span>` : ''; };
+document.getElementById('splitBtn').onclick = async ()=>{
+  if(!splitFile.files.length) return alert('Choose a PDF'); const ranges = parseRanges(document.getElementById('splitRanges').value); if(!ranges.length) return alert('Enter pages like 1,3,5-7');
+  const bytes = await splitFile.files[0].arrayBuffer(); const src = await PDFLib.PDFDocument.load(bytes);
+  const out = await PDFLib.PDFDocument.create(); let i=0;
+  const valid = ranges.filter(r=> r>=1 && r<=src.getPageCount());
+  for(const p of valid){ const [copied] = await out.copyPages(src,[p-1]); out.addPage(copied); i++; setBar('splitBar', Math.round((i/valid.length)*100)); }
+  const res = await out.save(); downloadBytes(res,'extracted.pdf'); setTimeout(()=>setBar('splitBar',0),700);
+};
+
+/* Compress (raster) */
+const compFile = document.getElementById('compFile'), compName=document.getElementById('compName');
+document.getElementById('compClear').onclick = ()=>{ compFile.value=''; compName.innerHTML=''; setBar('compBar',0); };
+compFile.onchange = ()=>{ compName.innerHTML = compFile.files[0] ? `<span class="file-pill">${compFile.files[0].name}</span>` : ''; };
+document.getElementById('compBtn').onclick = async ()=>{
+  if(!compFile.files.length) return alert('Choose a PDF'); const q = parseFloat(document.getElementById('compQuality').value || '0.6');
+  setBar('compBar',5);
+  const bytes = await compFile.files[0].arrayBuffer();
+  const loading = pdfjsLib.getDocument({data: bytes});
+  const pdf = await loading.promise;
+  const out = await PDFLib.PDFDocument.create();
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const vp = page.getViewport({scale:1.0});
+    const maxSide = 1200; const scale = Math.min(maxSide/Math.max(vp.width,vp.height),1.0);
+    const canvas = document.createElement('canvas'); canvas.width=Math.round(vp.width*scale); canvas.height=Math.round(vp.height*scale);
+    const ctx = canvas.getContext('2d');
+    await page.render({canvasContext:ctx,viewport:page.getViewport({scale})}).promise;
+    const dataUrl = canvas.toDataURL('image/jpeg', q); const jpgBytes = await (await fetch(dataUrl)).arrayBuffer();
+    const jpg = await out.embedJpg(jpgBytes);
+    out.addPage([jpg.width, jpg.height]).drawImage(jpg, {x:0,y:0,width:jpg.width,height:jpg.height});
+    setBar('compBar', Math.round((i/pdf.numPages)*100));
+  }
+  const res = await out.save(); downloadBytes(res,'compressed.pdf'); setBar('compBar',100); setTimeout(()=>setBar('compBar',0),700);
+};
+
+/* Images -> PDF */
+const imgFiles = document.getElementById('imgFiles'), imgList=document.getElementById('imgList');
+imgFiles.onchange = async ()=>{ imgList.innerHTML=''; [...imgFiles.files].forEach(f=>{ const s=document.createElement('span'); s.className='file-pill'; s.textContent=f.name; imgList.appendChild(s); }); };
+document.getElementById('imgToPdf').onclick = async ()=>{
+  if(!imgFiles.files.length) return alert('Select images'); const res = await (async()=>{ const out = await PDFLib.PDFDocument.create(); for(const f of imgFiles.files){ const arr = await f.arrayBuffer(); const img = f.type.includes('png') ? await out.embedPng(arr) : await out.embedJpg(arr); const p = out.addPage([img.width, img.height]); p.drawImage(img,{x:0,y:0,width:img.width,height:img.height}); } return out.save(); })();
+  downloadBytes(res,'images.pdf');
+};
+
+/* PDF -> JPG */
+const pdfToImgFile = document.getElementById('pdfToImgFile'), pdfToImgName=document.getElementById('pdfToImgName');
+document.getElementById('pdfToImgClear').onclick = ()=>{ pdfToImgFile.value=''; pdfToImgName.innerHTML=''; };
+pdfToImgFile.onchange = ()=>{ pdfToImgName.innerHTML = pdfToImgFile.files[0] ? `<span class="file-pill">${pdfToImgFile.files[0].name}</span>` : ''; };
+document.getElementById('pdfToImgBtn').onclick = async ()=>{
+  if(!pdfToImgFile.files.length) return alert('Choose PDF'); const bytes = await pdfToImgFile.files[0].arrayBuffer(); const loading = pdfjsLib.getDocument({data: bytes}); const pdf = await loading.promise;
+  for(let i=1;i<=pdf.numPages;i++){ const page = await pdf.getPage(i); const vp = page.getViewport({scale:1.5}); const canvas=document.createElement('canvas'); canvas.width=vp.width; canvas.height=vp.height; const ctx=canvas.getContext('2d'); await page.render({canvasContext:ctx,viewport:vp}).promise; const dataUrl=canvas.toDataURL('image/jpeg',0.9); const a=document.createElement('a'); a.href=dataUrl; a.download=`page-${i}.jpg`; document.body.appendChild(a); a.click(); a.remove(); }
+};
+
+/* Word -> PDF (Mammoth -> HTML -> jsPDF) */
+const docxFile = document.getElementById('docxFile'), docxName=document.getElementById('docxName');
+docxFile.onchange = ()=>{ docxName.innerHTML = docxFile.files[0] ? `<span class="file-pill">${docxFile.files[0].name}</span>` : ''; };
+document.getElementById('docxToPdf').onclick = async ()=>{
+  if(!docxFile.files.length) return alert('Choose a DOCX file');
+  const arrayBuffer = await docxFile.files[0].arrayBuffer();
+  const result = await mammoth.convertToHtml({arrayBuffer: arrayBuffer});
+  const html = result.value; // string
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'px', format:'a4'});
+  const tmp = document.createElement('div'); tmp.style.width='794px'; tmp.innerHTML = html; document.body.appendChild(tmp);
+  await doc.html(tmp, {callback: function () { const blob = doc.output('blob'); downloadBytes(blob, 'converted.pdf', 'application/pdf'); tmp.remove(); }});
+};
+
+/* PDF -> Word (basic text extraction into DOCX) */
+const pdfToDocFile = document.getElementById('pdfToDocFile'), pdfToDocName=document.getElementById('pdfToDocName');
+document.getElementById('pdfToDocClear').onclick = ()=>{ pdfToDocFile.value=''; pdfToDocName.innerHTML=''; };
+pdfToDocFile.onchange = ()=>{ pdfToDocName.innerHTML = pdfToDocFile.files[0] ? `<span class="file-pill">${pdfToDocFile.files[0].name}</span>` : ''; };
+document.getElementById('pdfToDocBtn').onclick = async ()=>{
+  if(!pdfToDocFile.files.length) return alert('Choose PDF');
+  const bytes = await pdfToDocFile.files[0].arrayBuffer();
+  const loading = pdfjsLib.getDocument({data: bytes}); const pdf = await loading.promise;
+  let texts = [];
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i); const content = await page.getTextContent(); const str = content.items.map(it=>it.str).join(' '); texts.push(str);
+  }
+  const doc = new docx.Document();
+  texts.forEach((p,idx)=>{ doc.addSection({children:[new docx.Paragraph({children:[new docx.TextRun({text: 'Page '+(idx+1), bold:true})]}), new docx.Paragraph({text: p})]}); });
+  const packer = new docx.Packer();
+  const blob = await packer.toBlob(doc);
+  downloadBytes(await blob.arrayBuffer(), 'extracted.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+};
+
+// drag/drop handlers
+['mergeDrop','splitDrop','compDrop','pdfToImgDrop','pdfToDocDrop'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('dragover', e=>{ e.preventDefault(); el.classList.add('drag'); });
+  el.addEventListener('dragleave', e=>{ el.classList.remove('drag'); });
+  el.addEventListener('drop', e=>{ e.preventDefault(); el.classList.remove('drag'); const files = e.dataTransfer.files; if(id==='mergeDrop'){ document.getElementById('mergeFiles').files = files; document.getElementById('mergeFiles').onchange(); } else if(id==='splitDrop'){ document.getElementById('splitFile').files = files; document.getElementById('splitFile').onchange(); } else if(id==='compDrop'){ document.getElementById('compFile').files = files; document.getElementById('compFile').onchange(); } else if(id==='pdfToImgDrop'){ document.getElementById('pdfToImgFile').files = files; document.getElementById('pdfToImgFile').onchange(); } else if(id==='pdfToDocDrop'){ document.getElementById('pdfToDocFile').files = files; document.getElementById('pdfToDocFile').onchange(); } });
+});
+
+</script>
+</body></html>
