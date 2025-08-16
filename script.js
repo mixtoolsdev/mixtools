@@ -36,15 +36,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let progress = 0;
             const interval = setInterval(() => {
                 progress += 10;
+                if (progress > 100) progress = 100;
                 progressFill.style.width = `${progress}%`;
-                if (progress >= 100) clearInterval(interval);
-            }, 300);
+                if (progress === 100) clearInterval(interval);
+            }, 200);
 
             if (currentTool === 'merge') {
                 const pdfDoc = await PDFDocument.create();
                 for (let file of files) {
-                    const bytes = new Uint8Array(await file.arrayBuffer());
-                    const srcDoc = await PDFDocument.load(bytes);
+                    const arrayBuffer = await file.arrayBuffer();
+                    const srcDoc = await PDFDocument.load(arrayBuffer);
                     const pages = await pdfDoc.copyPages(srcDoc, srcDoc.getPageIndices());
                     pages.forEach(page => pdfDoc.addPage(page));
                 }
@@ -52,8 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 download(pdfBytes, 'merged.pdf', 'application/pdf');
             } else if (currentTool === 'split') {
                 const file = files[0];
-                const bytes = new Uint8Array(await file.arrayBuffer());
-                const pdfDoc = await PDFDocument.load(bytes);
+                const arrayBuffer = await file.arrayBuffer();
+                const pdfDoc = await PDFDocument.load(arrayBuffer);
                 const pageCount = pdfDoc.getPageCount();
                 const ranges = prompt('Enter page ranges (e.g., 1,3,5-7) or leave blank for all:') || '';
                 let pagesToSplit = [];
@@ -80,14 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else if (currentTool === 'compress') {
                 const file = files[0];
-                const bytes = new Uint8Array(await file.arrayBuffer());
-                const pdfDoc = await PDFDocument.load(bytes);
+                const arrayBuffer = await file.arrayBuffer();
+                const pdfDoc = await PDFDocument.load(arrayBuffer);
                 const pdfBytes = await pdfDoc.save({ useObjectStreams: false });
                 download(pdfBytes, 'compressed.pdf', 'application/pdf');
             } else if (currentTool === 'pdf-to-jpg') {
                 const file = files[0];
                 const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
                 const dataUrls = [];
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
@@ -95,7 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const canvas = document.createElement('canvas');
                     canvas.width = viewport.width;
                     canvas.height = viewport.height;
-                    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+                    const context = canvas.getContext('2d');
+                    await page.render({ canvasContext: context, viewport }).promise;
                     dataUrls.push(canvas.toDataURL('image/jpeg'));
                 }
                 dataUrls.forEach((url, i) => {
@@ -110,40 +112,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 0; i < files.length; i++) {
                     const img = new Image();
                     img.src = URL.createObjectURL(files[i]);
-                    await new Promise(resolve => img.onload = resolve);
+                    await new Promise(resolve => (img.onload = resolve));
                     if (i > 0) doc.addPage();
                     doc.addImage(img, 'JPEG', 10, 10, 190, 0);
                 }
                 download(doc.output('arraybuffer'), 'images.pdf', 'application/pdf');
             } else if (currentTool === 'pdf-to-word') {
                 const file = files[0];
-                pdfjsLib.getDocument(await file.arrayBuffer()).promise.then(pdf => {
-                    let fullText = '';
-                    const extractText = async (pageNum) => {
-                        if (pageNum > pdf.numPages) {
-                            download(new Blob([fullText], { type: 'text/plain' }), 'document.txt', 'text/plain');
-                            return;
-                        }
-                        const page = await pdf.getPage(pageNum);
-                        const content = await page.getTextContent();
-                        fullText += content.items.map(item => item.str).join('\n') + '\n\n';
-                        extractText(pageNum + 1);
-                    };
-                    extractText(1);
-                });
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                let fullText = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    fullText += content.items.map(item => item.str).join(' ') + '\n\n';
+                }
+                download(new Blob([fullText], { type: 'text/plain' }), 'document.txt', 'text/plain');
             } else if (currentTool === 'word-to-pdf') {
                 const file = files[0];
                 const arrayBuffer = await file.arrayBuffer();
-                mammoth.convertToHtml({ arrayBuffer }).then(result => {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    doc.text(result.value, 10, 10);
-                    download(doc.output('arraybuffer'), 'document.pdf', 'application/pdf');
-                });
+                const result = await mammoth.convertToHtml({ arrayBuffer });
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.text(result.value, 10, 10);
+                download(doc.output('arraybuffer'), 'document.pdf', 'application/pdf');
             } else if (currentTool === 'rotate') {
                 const file = files[0];
-                const bytes = new Uint8Array(await file.arrayBuffer());
-                const pdfDoc = await PDFDocument.load(bytes);
+                const arrayBuffer = await file.arrayBuffer();
+                const pdfDoc = await PDFDocument.load(arrayBuffer);
                 const degrees = parseInt(prompt('Rotation degrees (90, 180, 270):'));
                 if ([90, 180, 270].includes(degrees)) {
                     const pages = pdfDoc.getPages();
@@ -156,15 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (currentTool === 'extract-text') {
                 const file = files[0];
                 const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
                 let extractedText = '';
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const content = await page.getTextContent();
                     extractedText += `Page ${i}:\n` + content.items.map(item => item.str).join(' ') + '\n\n';
                 }
-                const blob = new Blob([extractedText], { type: 'text/plain' });
-                download(URL.createObjectURL(blob), 'extracted-text.txt', 'text/plain');
+                download(new Blob([extractedText], { type: 'text/plain' }), 'extracted-text.txt', 'text/plain');
             }
             result.innerHTML = '<p class="text-green-600">Done!</p>';
             progressFill.style.width = '100%';
