@@ -26,14 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btn.addEventListener('click', async () => {
         const files = input.files;
-        if (!files.length) return alert('कृपया फाइल चुनें');
-        result.innerHTML = '<p class="text-gray-600">प्रोसेसिंग...</p>';
+        if (!files.length) return alert('Please select a file');
+        result.innerHTML = '<p class="text-gray-600">Processing...</p>';
         progressBar.classList.remove('hidden');
         progressFill.style.width = '0%';
 
         try {
             const { PDFDocument } = window['pdf-lib'];
-            // Progress simulation (for long tasks)
             let progress = 0;
             const interval = setInterval(() => {
                 progress += 10;
@@ -55,7 +54,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 const file = files[0];
                 const bytes = new Uint8Array(await file.arrayBuffer());
                 const pdfDoc = await PDFDocument.load(bytes);
-                for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+                const pageCount = pdfDoc.getPageCount();
+                const ranges = prompt('Enter page ranges (e.g., 1,3,5-7) or leave blank for all:') || '';
+                let pagesToSplit = [];
+                if (ranges) {
+                    const rangeArray = ranges.split(',').map(r => r.trim());
+                    rangeArray.forEach(r => {
+                        if (r.includes('-')) {
+                            const [start, end] = r.split('-').map(Number);
+                            for (let i = start; i <= end && i <= pageCount; i++) pagesToSplit.push(i - 1);
+                        } else {
+                            const num = parseInt(r);
+                            if (num > 0 && num <= pageCount) pagesToSplit.push(num - 1);
+                        }
+                    });
+                } else {
+                    pagesToSplit = Array.from({ length: pageCount }, (_, i) => i);
+                }
+                for (let i of pagesToSplit) {
                     const newDoc = await PDFDocument.create();
                     const [page] = await newDoc.copyPages(pdfDoc, [i]);
                     newDoc.addPage(page);
@@ -66,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const file = files[0];
                 const bytes = new Uint8Array(await file.arrayBuffer());
                 const pdfDoc = await PDFDocument.load(bytes);
-                const pdfBytes = await pdfDoc.save({ useObjectStreams: false }); // Basic compression
+                const pdfBytes = await pdfDoc.save({ useObjectStreams: false });
                 download(pdfBytes, 'compressed.pdf', 'application/pdf');
             } else if (currentTool === 'pdf-to-jpg') {
                 const file = files[0];
@@ -105,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let fullText = '';
                     const extractText = async (pageNum) => {
                         if (pageNum > pdf.numPages) {
-                            download(new Blob([fullText], { type: 'text/plain' }), 'extracted.txt', 'text/plain');
+                            download(new Blob([fullText], { type: 'text/plain' }), 'document.txt', 'text/plain');
                             return;
                         }
                         const page = await pdf.getPage(pageNum);
@@ -121,26 +137,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 mammoth.convertToHtml({ arrayBuffer }).then(result => {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
-                    doc.html(result.value, {
-                        callback: function (doc) {
-                            download(doc.output('arraybuffer'), 'document.pdf', 'application/pdf');
-                        },
-                        x: 10,
-                        y: 10
-                    });
+                    doc.text(result.value, 10, 10);
+                    download(doc.output('arraybuffer'), 'document.pdf', 'application/pdf');
                 });
             } else if (currentTool === 'rotate') {
                 const file = files[0];
                 const bytes = new Uint8Array(await file.arrayBuffer());
                 const pdfDoc = await PDFDocument.load(bytes);
-                const degrees = parseInt(prompt('रोटेशन डिग्री (90, 180, 270):'));
+                const degrees = parseInt(prompt('Rotation degrees (90, 180, 270):'));
                 if ([90, 180, 270].includes(degrees)) {
                     const pages = pdfDoc.getPages();
                     pages.forEach(page => page.setRotation(PDFLib.degrees(degrees)));
                     const pdfBytes = await pdfDoc.save();
                     download(pdfBytes, 'rotated.pdf', 'application/pdf');
                 } else {
-                    alert('केवल 90, 180, या 270 डिग्री समर्थित हैं।');
+                    alert('Only 90, 180, or 270 degrees are supported.');
                 }
             } else if (currentTool === 'extract-text') {
                 const file = files[0];
@@ -155,10 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const blob = new Blob([extractedText], { type: 'text/plain' });
                 download(URL.createObjectURL(blob), 'extracted-text.txt', 'text/plain');
             }
-            result.innerHTML = '<p class="text-green-600">काम पूरा हुआ!</p>';
+            result.innerHTML = '<p class="text-green-600">Done!</p>';
             progressFill.style.width = '100%';
         } catch (err) {
-            result.innerHTML = '<p class="text-red-600">एरर: ' + err.message + '</p>';
+            result.innerHTML = '<p class="text-red-600">Error: ' + err.message + '</p>';
             console.error(err);
             progressBar.classList.add('hidden');
         }
