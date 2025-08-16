@@ -3,53 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MixTools - सभी PDF टूल्स</title>
-    <meta name="description" content="फ्री ऑनलाइन PDF टूल्स: मर्ज, स्प्लिट, कंप्रेस, कन्वर्ट और अधिक। तेज़ और सुरक्षित।">
-    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="MixTools - मुफ्त और सुरक्षित ऑनलाइन PDF टूल्स: मर्ज, स्प्लिट, कंप्रेस, कन्वर्ट।">
+    <meta name="keywords" content="PDF tools, merge PDF, split PDF, compress PDF, convert PDF">
+    <meta name="author" content="MixTools">
+    <title>MixTools - प्रोफेशनल PDF सॉल्यूशंस</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.338/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script defer src="script.js"></script>
 </head>
-<body>
-    <header class="hero">
-        <nav class="navbar">
-            <h1 class="logo">MixTools</h1>
-            <ul>
-                <li>होम</li>
-                <li>हमारे बारे में</li>
-                <li>संपर्क</li>
+<body class="font-sans bg-gradient-to-br from-indigo-500 to-blue-400 text-gray-800">
+    <!-- Header -->
+    <header class="py-6">
+        <nav class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-5xl font-bold text-white">MixTools</h1>
+            <ul class="flex space-x-6 text-white">
+                <li><a href="#" class="hover:underline">होम</a></li>
+                <li><a href="#" class="hover:underline">हमारे बारे में</a></li>
+                <li><a href="#" class="hover:underline">संपर्क</a></li>
             </ul>
         </nav>
-        <div class="hero-content">
-            <h2>अपनी PDF यात्रा शुरू करें</h2>
-            <p>सभी फाइलों के लिए तेज़, मुफ्त और सुरक्षित टूल्स</p>
-            <button>शुरू करें</button>
+        <div class="text-center mt-12">
+            <h2 class="text-6xl font-bold text-white">सभी PDF टूल्स एक जगह</h2>
+            <p class="mt-4 text-xl text-white">तेज़, मुफ्त और सुरक्षित समाधान</p>
+            <button class="mt-6 bg-white text-indigo-600 px-6 py-3 rounded-lg hover:bg-gray-100">शुरू करें</button>
         </div>
     </header>
 
-    <section class="tools-grid">
-        <div class="tool-tile" data-tool="merge">PDF मर्ज करें</div>
-        <div class="tool-tile" data-tool="split">PDF स्प्लिट करें</div>
-        <div class="tool-tile" data-tool="compress">PDF कंप्रेस करें</div>
-        <div class="tool-tile" data-tool="pdf-to-jpg">PDF से इमेज</div>
-        <div class="tool-tile" data-tool="images-to-pdf">इमेज से PDF</div>
-        <div class="tool-tile" data-tool="pdf-to-word">PDF से वर्ड</div>
-        <div class="tool-tile" data-tool="word-to-pdf">वर्ड से PDF</div>
-        <div class="tool-tile" data-tool="rotate">PDF रोटेट करें</div>
+    <!-- Tools Section -->
+    <section class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="merge">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">PDF मर्ज करें</h3>
+                </div>
+            </div>
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="split">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m7-7H5" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">PDF स्प्लिट करें</h3>
+                </div>
+            </div>
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="compress">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">PDF कंप्रेस करें</h3>
+                </div>
+            </div>
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="pdf-to-jpg">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">PDF से इमेज</h3>
+                </div>
+            </div>
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="images-to-pdf">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">इमेज से PDF</h3>
+                </div>
+            </div>
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="pdf-to-word">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">PDF से वर्ड</h3>
+                </div>
+            </div>
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="word-to-pdf">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">वर्ड से PDF</h3>
+                </div>
+            </div>
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="rotate">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">PDF रोटेट करें</h3>
+                </div>
+            </div>
+            <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="extract-text">
+                <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6m-6 4h6m-6 4h6" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-semibold">PDF से टेक्स्ट निकालें</h3>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <div id="tool-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 id="tool-title"></h3>
-            <input type="file" id="file-input" multiple>
-            <button id="process-btn">प्रोसेस करें</button>
-            <div id="result"></div>
+    <!-- Modal -->
+    <div id="tool-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <span class="close absolute top-4 right-4 text-2xl cursor-pointer">&times;</span>
+            <h3 id="tool-title" class="text-xl font-bold mb-4"></h3>
+            <input type="file" id="file-input" class="mb-4 w-full" multiple>
+            <button id="process-btn" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">प्रोसेस करें</button>
+            <div id="progress-bar" class="mt-2 w-full bg-gray-200 rounded-full h-2.5 hidden">
+                <div id="progress-fill" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%;"></div>
+            </div>
+            <div id="result" class="mt-4"></div>
         </div>
     </div>
 
-    <footer>© 2025 MixTools.in</footer>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-4">
+        <p>© 2025 MixTools.in | <a href="#" class="underline">प्राइवेसी पॉलिसी</a> | <a href="#" class="underline">संपर्क करें</a></p>
+    </footer>
 </body>
 </html>
