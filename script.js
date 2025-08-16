@@ -8,8 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const result = document.getElementById('result');
     const progressBar = document.getElementById('progress-bar');
     const progressFill = document.getElementById('progress-fill');
+    const walkmanInput = document.getElementById('walkman-input');
+    const walkmanToUnicodeBtn = document.getElementById('walkman-to-unicode');
+    const walkmanResult = document.getElementById('walkman-result');
+    const unicodeInput = document.getElementById('unicode-input');
+    const unicodeToKrutidevBtn = document.getElementById('unicode-to-krutidev');
+    const krutidevResult = document.getElementById('krutidev-result');
     let currentTool = '';
 
+    // PDF Tool Functionality
     tiles.forEach(tile => {
         tile.addEventListener('click', () => {
             currentTool = tile.dataset.tool;
@@ -32,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.style.width = '0%';
 
         try {
-            const { PDFDocument, degrees } = window.PDFLib; // सही इम्पोर्ट
+            const { PDFDocument, degrees } = window['pdf-lib'];
             let progress = 0;
             const interval = setInterval(() => {
                 progress += 10;
@@ -168,6 +175,35 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(err);
             progressBar.classList.add('hidden');
         }
+    });
+
+    // Font Conversion Functionality
+    walkmanToUnicodeBtn.addEventListener('click', () => {
+        const inputText = walkmanInput.value;
+        // Simple mapping for Walkman to Unicode (basic example, expand as needed)
+        const conversionMap = {
+            'क': 'क', 'ख': 'ख', 'ग': 'ग', 'घ': 'घ', // Add more mappings
+            // Note: Actual conversion requires complex mapping, this is a placeholder
+        };
+        let convertedText = '';
+        for (let char of inputText) {
+            convertedText += conversionMap[char] || char;
+        }
+        walkmanResult.textContent = convertedText || 'Conversion not fully implemented. Use a detailed mapping.';
+    });
+
+    unicodeToKrutidevBtn.addEventListener('click', () => {
+        const inputText = unicodeInput.value;
+        // Simple mapping for Unicode to KrutiDev (basic example, expand as needed)
+        const conversionMap = {
+            'क': 'ky', 'ख': 'K', 'ग': 'g', 'घ': 'G', // Add more mappings
+            // Note: Actual conversion requires complex mapping, this is a placeholder
+        };
+        let convertedText = '';
+        for (let char of inputText) {
+            convertedText += conversionMap[char] || char;
+        }
+        krutidevResult.textContent = convertedText || 'Conversion not fully implemented. Use a detailed mapping.';
     });
 
     function download(data, name, type) {
