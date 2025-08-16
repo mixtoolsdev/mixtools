@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.style.width = '0%';
 
         try {
-            const { PDFDocument } = window['pdf-lib'];
+            const { PDFDocument } = pdfLib; // सही इम्पोर्ट
             let progress = 0;
             const interval = setInterval(() => {
                 progress += 10;
