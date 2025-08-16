@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.style.width = '0%';
 
         try {
-            const { PDFDocument } = pdfLib; // सही इम्पोर्ट
+            const { PDFDocument } = window.pdfLib; // सही इम्पोर्ट
             let progress = 0;
             const interval = setInterval(() => {
                 progress += 10;
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const degrees = parseInt(prompt('Rotation degrees (90, 180, 270):'));
                 if ([90, 180, 270].includes(degrees)) {
                     const pages = pdfDoc.getPages();
-                    pages.forEach(page => page.setRotation(PDFLib.degrees(degrees)));
+                    pages.forEach(page => page.setRotation(degrees * (Math.PI / 180)));
                     const pdfBytes = await pdfDoc.save();
                     download(pdfBytes, 'rotated.pdf', 'application/pdf');
                 } else {
