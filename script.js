@@ -6,27 +6,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('file-input');
     const btn = document.getElementById('process-btn');
     const result = document.getElementById('result');
+    const progressBar = document.getElementById('progress-bar');
+    const progressFill = document.getElementById('progress-fill');
     let currentTool = '';
 
     tiles.forEach(tile => {
         tile.addEventListener('click', () => {
             currentTool = tile.dataset.tool;
-            title.textContent = tile.textContent;
-            modal.style.display = 'block';
+            title.textContent = tile.querySelector('h3').textContent;
+            modal.classList.remove('hidden');
             input.accept = currentTool.includes('word') ? '.docx' : '.pdf, .jpg, .png';
             input.multiple = ['merge', 'images-to-pdf'].includes(currentTool);
+            progressBar.classList.add('hidden');
+            result.innerHTML = '';
         });
     });
 
-    close.addEventListener('click', () => modal.style.display = 'none');
+    close.addEventListener('click', () => modal.classList.add('hidden'));
 
     btn.addEventListener('click', async () => {
         const files = input.files;
         if (!files.length) return alert('कृपया फाइल चुनें');
-        result.innerHTML = 'प्रोसेसिंग...';
+        result.innerHTML = '<p class="text-gray-600">प्रोसेसिंग...</p>';
+        progressBar.classList.remove('hidden');
+        progressFill.style.width = '0%';
 
         try {
-            const { PDFDocument } = PDFLib;
+            const { PDFDocument } = window['pdf-lib'];
+            // Progress simulation (for long tasks)
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = `${progress}%`;
+                if (progress >= 100) clearInterval(interval);
+            }, 300);
+
             if (currentTool === 'merge') {
                 const pdfDoc = await PDFDocument.create();
                 for (let file of files) {
@@ -49,7 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     download(newBytes, `page-${i+1}.pdf`, 'application/pdf');
                 }
             } else if (currentTool === 'compress') {
-                alert('कंप्रेस फीचर अभी डेवलपमेंट में है'); // Placeholder
+                const file = files[0];
+                const bytes = new Uint8Array(await file.arrayBuffer());
+                const pdfDoc = await PDFDocument.load(bytes);
+                const pdfBytes = await pdfDoc.save({ useObjectStreams: false }); // Basic compression
+                download(pdfBytes, 'compressed.pdf', 'application/pdf');
             } else if (currentTool === 'pdf-to-jpg') {
                 const file = files[0];
                 const arrayBuffer = await file.arrayBuffer();
@@ -84,10 +102,18 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (currentTool === 'pdf-to-word') {
                 const file = files[0];
                 pdfjsLib.getDocument(await file.arrayBuffer()).promise.then(pdf => {
-                    pdf.getPage(1).then(page => page.getTextContent().then(content => {
-                        const text = content.items.map(item => item.str).join('\n');
-                        download(new Blob([text], { type: 'text/plain' }), 'document.txt', 'text/plain');
-                    }));
+                    let fullText = '';
+                    const extractText = async (pageNum) => {
+                        if (pageNum > pdf.numPages) {
+                            download(new Blob([fullText], { type: 'text/plain' }), 'extracted.txt', 'text/plain');
+                            return;
+                        }
+                        const page = await pdf.getPage(pageNum);
+                        const content = await page.getTextContent();
+                        fullText += content.items.map(item => item.str).join('\n') + '\n\n';
+                        extractText(pageNum + 1);
+                    };
+                    extractText(1);
                 });
             } else if (currentTool === 'word-to-pdf') {
                 const file = files[0];
@@ -95,21 +121,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 mammoth.convertToHtml({ arrayBuffer }).then(result => {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
-                    doc.text(result.value, 10, 10);
-                    download(doc.output('arraybuffer'), 'document.pdf', 'application/pdf');
+                    doc.html(result.value, {
+                        callback: function (doc) {
+                            download(doc.output('arraybuffer'), 'document.pdf', 'application/pdf');
+                        },
+                        x: 10,
+                        y: 10
+                    });
                 });
             } else if (currentTool === 'rotate') {
-                alert('रोटेट फीचर अभी डेवलपमेंट में है'); // Placeholder
+                const file = files[0];
+                const bytes = new Uint8Array(await file.arrayBuffer());
+                const pdfDoc = await PDFDocument.load(bytes);
+                const degrees = parseInt(prompt('रोटेशन डिग्री (90, 180, 270):'));
+                if ([90, 180, 270].includes(degrees)) {
+                    const pages = pdfDoc.getPages();
+                    pages.forEach(page => page.setRotation(PDFLib.degrees(degrees)));
+                    const pdfBytes = await pdfDoc.save();
+                    download(pdfBytes, 'rotated.pdf', 'application/pdf');
+                } else {
+                    alert('केवल 90, 180, या 270 डिग्री समर्थित हैं।');
+                }
+            } else if (currentTool === 'extract-text') {
+                const file = files[0];
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                let extractedText = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    extractedText += `Page ${i}:\n` + content.items.map(item => item.str).join(' ') + '\n\n';
+                }
+                const blob = new Blob([extractedText], { type: 'text/plain' });
+                download(URL.createObjectURL(blob), 'extracted-text.txt', 'text/plain');
             }
-            result.innerHTML = 'काम पूरा हुआ!';
+            result.innerHTML = '<p class="text-green-600">काम पूरा हुआ!</p>';
+            progressFill.style.width = '100%';
         } catch (err) {
-            result.innerHTML = 'एरर: ' + err.message;
+            result.innerHTML = '<p class="text-red-600">एरर: ' + err.message + '</p>';
             console.error(err);
+            progressBar.classList.add('hidden');
         }
     });
 
-    function download(bytes, name, type) {
-        const blob = new Blob([bytes], { type });
+    function download(data, name, type) {
+        const blob = new Blob([data], { type });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
