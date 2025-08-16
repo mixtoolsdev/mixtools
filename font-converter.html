@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MixTools - Font Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.cdnfonts.com/css/krutidev-010" rel="stylesheet">
+    <script defer src="font-script.js"></script>
+</head>
+<body class="font-sans bg-gradient-to-br from-indigo-500 to-blue-400 text-gray-800">
+    <header class="py-6">
+        <nav class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-5xl font-bold text-white">MixTools - Font Converter</h1>
+            <a href="index.html" class="text-white hover:underline">Back to PDF Tools</a>
+        </nav>
+    </header>
+
+    <section class="container mx-auto px-4 py-12 bg-white rounded-lg shadow-lg">
+        <h2 class="text-3xl font-bold text-indigo-600 mb-6">Font Converter</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Walkman Chanakya to Unicode -->
+            <div class="p-4 border rounded-lg">
+                <h3 class="text-xl font-semibold mb-2">Walkman Chanakya to Unicode</h3>
+                <textarea id="walkman-input" class="w-full h-32 p-2 border rounded mb-2" placeholder="Enter Walkman Chanakya text here..."></textarea>
+                <button id="walkman-to-unicode" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Convert to Unicode</button>
+                <div id="walkman-result" class="mt-4 p-2 border rounded bg-gray-100"></div>
+            </div>
+            <!-- Unicode to KrutiDev -->
+            <div class="p-4 border rounded-lg">
+                <h3 class="text-xl font-semibold mb-2">Unicode to KrutiDev</h3>
+                <textarea id="unicode-input" class="w-full h-32 p-2 border rounded mb-2" placeholder="Enter Unicode text here..."></textarea>
+                <button id="unicode-to-krutidev" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Convert to KrutiDev</button>
+                <div id="krutidev-result" class="mt-4 p-2 border rounded bg-gray-100" style="font-family: 'Kruti Dev 010', sans-serif;"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white text-center py-4">
+        <p>© 2025 MixTools.in | <a href="#privacy" class="underline">Privacy Policy</a> | <a href="#contact" class="underline">Contact Us</a></p>
+    </footer>
+</body>
+</html>
