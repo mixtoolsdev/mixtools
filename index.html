@@ -8,14 +8,13 @@
     <meta name="author" content="MixTools">
     <title>MixTools - Professional PDF Solutions</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.338/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.22/mammoth.browser.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
     <script defer src="script.js"></script>
 </head>
 <body class="font-sans bg-gradient-to-br from-indigo-500 to-blue-400 text-gray-800">
-    <!-- Header -->
     <header class="py-6">
         <nav class="container mx-auto px-4 flex justify-between items-center">
             <h1 class="text-5xl font-bold text-white">MixTools</h1>
@@ -32,7 +31,6 @@
         </div>
     </header>
 
-    <!-- Tools Section -->
     <section class="container mx-auto px-4 py-12">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="tool-tile bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer" data-tool="merge">
@@ -110,7 +108,6 @@
         </div>
     </section>
 
-    <!-- Modal -->
     <div id="tool-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <span class="close absolute top-4 right-4 text-2xl cursor-pointer">&times;</span>
@@ -124,18 +121,15 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white text-center py-4">
         <p>© 2025 MixTools.in | <a href="#privacy" class="underline">Privacy Policy</a> | <a href="#contact" class="underline">Contact Us</a></p>
     </footer>
 
-    <!-- Privacy Policy (Placeholder) -->
     <div id="privacy" class="hidden">
         <h2>Privacy Policy</h2>
-        <p>At MixTools, we value your privacy. We do not store or share your uploaded files. All processing happens in your browser, ensuring your data remains secure. For more details, please contact us.</p>
+        <p>At MixTools, we prioritize your privacy. We do not store or share your uploaded files. All processing is done in your browser, ensuring your data remains secure. For any concerns, contact us at support@mixtools.in.</p>
     </div>
 
-    <!-- Contact Us (Placeholder) -->
     <div id="contact" class="hidden">
         <h2>Contact Us</h2>
         <p>Email: support@mixtools.in | Phone: +91-123-456-7890 | Address: 123 Tech Street, India</p>
