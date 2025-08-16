@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="MixTools - Free and secure online PDF tools: Merge, Split, Compress, Convert, Font Converter.">
-    <meta name="keywords" content="PDF tools, merge PDF, split PDF, compress PDF, convert PDF, font converter, Unicode, KrutiDev, Walkman">
+    <meta name="description" content="MixTools - Free and secure online PDF tools: Merge, Split, Compress, Convert.">
+    <meta name="keywords" content="PDF tools, merge PDF, split PDF, compress PDF, convert PDF">
     <meta name="author" content="MixTools">
-    <title>MixTools - Professional PDF & Font Solutions</title>
+    <title>MixTools - Professional PDF Solutions</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.js"></script>
     <script src="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.min.js"></script>
-    <script src="https://unpkg.com/mammoth@1.4.22/dist/mammoth.browser.min.js"></script>
+    <script src="https://unpkg.com/mammoth@1.4.22/mammoth.browser.min.js"></script>
     <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script defer src="script.js"></script>
-    <link href="https://fonts.cdnfonts.com/css/krutidev-010" rel="stylesheet"> <!-- KrutiDev फॉन्ट -->
 </head>
 <body class="font-sans bg-gradient-to-br from-indigo-500 to-blue-400 text-gray-800">
     <header class="py-6">
@@ -21,13 +20,13 @@
             <h1 class="text-5xl font-bold text-white">MixTools</h1>
             <ul class="flex space-x-6 text-white">
                 <li><a href="#" class="hover:underline">Home</a></li>
-                <li><a href="#font-converter" class="hover:underline">Font Converter</a></li>
+                <li><a href="font-converter.html" class="hover:underline">Font Converter</a></li>
                 <li><a href="#" class="hover:underline">About Us</a></li>
                 <li><a href="#" class="hover:underline">Contact</a></li>
             </ul>
         </nav>
         <div class="text-center mt-12">
-            <h2 class="text-6xl font-bold text-white">All PDF & Font Tools in One Place</h2>
+            <h2 class="text-6xl font-bold text-white">All PDF Tools in One Place</h2>
             <p class="mt-4 text-xl text-white">Fast, Free, and Secure Solutions</p>
             <button class="mt-6 bg-white text-indigo-600 px-6 py-3 rounded-lg hover:bg-gray-100">Get Started</button>
         </div>
@@ -106,26 +105,6 @@
                     </svg>
                     <h3 class="mt-2 text-lg font-semibold">Extract Text</h3>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="font-converter" class="container mx-auto px-4 py-12 bg-white rounded-lg shadow-lg">
-        <h2 class="text-3xl font-bold text-indigo-600 mb-6">Font Converter</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Walkman to Unicode Converter -->
-            <div class="p-4 border rounded-lg">
-                <h3 class="text-xl font-semibold mb-2">Walkman to Unicode Converter</h3>
-                <textarea id="walkman-input" class="w-full h-32 p-2 border rounded mb-2" placeholder="Enter Walkman Chanakya text here..."></textarea>
-                <button id="walkman-to-unicode" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Convert to Unicode</button>
-                <div id="walkman-result" class="mt-4 p-2 border rounded bg-gray-100"></div>
-            </div>
-            <!-- Unicode to KrutiDev Converter -->
-            <div class="p-4 border rounded-lg">
-                <h3 class="text-xl font-semibold mb-2">Unicode to KrutiDev Converter</h3>
-                <textarea id="unicode-input" class="w-full h-32 p-2 border rounded mb-2" placeholder="Enter Unicode text here..."></textarea>
-                <button id="unicode-to-krutidev" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Convert to KrutiDev</button>
-                <div id="krutidev-result" class="mt-4 p-2 border rounded bg-gray-100" style="font-family: 'Kruti Dev 010', sans-serif;"></div>
             </div>
         </div>
     </section>
