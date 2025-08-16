@@ -1,18 +1,55 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MixTools — Real Functions</title>
-<link rel="stylesheet" href="style.css">
-</head><body>
-<header><div class="brand">🧰 MixTools — Ready</div></header>
-<div class="wrap">
-  <div class="card">
-    <h1>MixTools — Real Functions Package</h1>
-    <p>This package includes real client-side implementations for Merge, Split, Compress, Images↔PDF, PDF→JPG, Word→PDF, PDF→Word (basic extraction).</p>
-    <div class="row" style="margin-top:12px">
-      <a href="tools.html" class="btn">Open Tools</a>
-      <a href="README.txt" class="btn secondary">Readme</a>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MixTools - सभी PDF टूल्स</title>
+    <meta name="description" content="फ्री ऑनलाइन PDF टूल्स: मर्ज, स्प्लिट, कंप्रेस, कन्वर्ट और अधिक। तेज़ और सुरक्षित।">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.338/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header class="hero">
+        <nav class="navbar">
+            <h1 class="logo">MixTools</h1>
+            <ul>
+                <li>होम</li>
+                <li>हमारे बारे में</li>
+                <li>संपर्क</li>
+            </ul>
+        </nav>
+        <div class="hero-content">
+            <h2>अपनी PDF यात्रा शुरू करें</h2>
+            <p>सभी फाइलों के लिए तेज़, मुफ्त और सुरक्षित टूल्स</p>
+            <button>शुरू करें</button>
+        </div>
+    </header>
+
+    <section class="tools-grid">
+        <div class="tool-tile" data-tool="merge">PDF मर्ज करें</div>
+        <div class="tool-tile" data-tool="split">PDF स्प्लिट करें</div>
+        <div class="tool-tile" data-tool="compress">PDF कंप्रेस करें</div>
+        <div class="tool-tile" data-tool="pdf-to-jpg">PDF से इमेज</div>
+        <div class="tool-tile" data-tool="images-to-pdf">इमेज से PDF</div>
+        <div class="tool-tile" data-tool="pdf-to-word">PDF से वर्ड</div>
+        <div class="tool-tile" data-tool="word-to-pdf">वर्ड से PDF</div>
+        <div class="tool-tile" data-tool="rotate">PDF रोटेट करें</div>
+    </section>
+
+    <div id="tool-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="tool-title"></h3>
+            <input type="file" id="file-input" multiple>
+            <button id="process-btn">प्रोसेस करें</button>
+            <div id="result"></div>
+        </div>
     </div>
-  </div>
-</div>
-</body></html>
+
+    <footer>© 2025 MixTools.in</footer>
+</body>
+</html>
